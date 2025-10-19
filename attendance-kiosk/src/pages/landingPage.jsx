@@ -21,7 +21,7 @@ function LandingPage() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-10 w-full max-w-2xl">
                 <div
                     className="flex flex-col items-center justify-center space-y-2 cursor-pointer hover:scale-105 transition-transform bg-gray-800 rounded-lg p-6"
-                    onClick={() => alert("Login clicked")}
+                    onClick={() => navigate("/systemService")}
                 >
                     <img src={loginIcon} alt="Login" className="w-20 h-20 object-contain" />
                     <span className="text-2xl font-bold">Login</span>
