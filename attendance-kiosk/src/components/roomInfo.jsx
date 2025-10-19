@@ -5,7 +5,7 @@ function RoomInfo({ room = "ROOM 103", status = "Available", statusColor = "gree
   return (
     <div className="flex flex-col space-y-2 sm:space-y-3 max-w-lg overflow-hidden">
       <p
-        className="text-6xl sm:text-8xl md:text-8xl lg:text-8xl font-medium leading-tight"
+        className="text-6xl sm:text-8xl md:text-8xl lg:text-12xl font-bold leading-tight"
         style={{
           animation: "float 6s ease-in-out infinite",
         }}
@@ -14,7 +14,7 @@ function RoomInfo({ room = "ROOM 103", status = "Available", statusColor = "gree
       </p>
        <div className="flex items-center space-x-2 sm:space-x-3">
         <FaCircle className="text-green-500 text-sm sm:text-base animate-pulse" />
-        <span className="text-md sm:text-xl md:text-1xl font-small text-green-500">{status}</span>
+        <span className="text-md sm:text-xl md:text-2xl font-small text-green-500">{status}</span>
       </div>
       <style>
         {`
