@@ -1,11 +1,12 @@
 import { useState, useEffect } from "react";
 import logo from "../assets/images/aics_logo.png";
 import bgImage from "../assets/images/bg.jpg";
-import RoomInfo from "../components/roomInfo";
-import TimeDisplay from "../components/timeDisplay";
-import SwipeHint from "../components/swipeHint";
-import { useSwipeUp } from "../components/useSwipeup";
+import RoomInfo from "../components/screenSaver/roomInfo";
+import TimeDisplay from "../components/screenSaver/timeDisplay";
+import SwipeHint from "../components/screenSaver/swipeHint";
+import { useSwipeUp } from "../components/screenSaver/useSwipeup";
 import { useNavigate } from "react-router-dom";
+import NetworkStatus from "../components/networkStatus"; 
 
 function ScreenSaver() {
   const [time, setTime] = useState(new Date());
@@ -40,15 +41,22 @@ function ScreenSaver() {
         }}
       ></div>
 
+      <div className="absolute top-4 left-4 sm:top-6 sm:left-6">
+        <NetworkStatus />
+      </div>
+
       <div className="absolute top-4 right-4 sm:top-6 sm:right-6">
         <img src={logo} alt="Logo" className="w-16 sm:w-24 h-auto opacity-90" />
       </div>
+
       <div className="absolute top-1/2 left-4 sm:left-6 transform -translate-y-1/2">
         <RoomInfo />
       </div>
+
       <div className="absolute bottom-4 left-4 sm:bottom-6 sm:left-6">
         <TimeDisplay time={time} />
       </div>
+      
       <div className="absolute bottom-4 right-4 sm:bottom-6 sm:right-6">
         <SwipeHint />
       </div>

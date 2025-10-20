@@ -1,8 +1,8 @@
 import React, { useState } from "react";
-import TopInfo from "../components/topInfo";
-import CameraFeed from "../components/cameraFeed";
-import BottomInfo from "../components/bottomInfo";
-import CameraSelector from "../components/cameraSelector";
+import TopInfo from "../components/systemService/topInfo";
+import CameraFeed from "../components/systemService/cameraFeed";
+import BottomInfo from "../components/systemService/bottomInfo";
+import CameraSelector from "../components/systemService/cameraSelector";
 
 function SystemService() {
   const [deviceId, setDeviceId] = useState(null);

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import leaveIcon from "../assets/icons/leave.png";
+import leaveIcon from "../../assets/icons/leave.png";
 
 function BottomInfo({ studentName = "Juan Delacruz", studentStatus = "On Time", studentCount = 60 }) {
     const [time, setTime] = useState(new Date());
