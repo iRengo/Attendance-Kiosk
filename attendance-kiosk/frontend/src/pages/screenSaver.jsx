@@ -29,23 +29,23 @@ function ScreenSaver() {
 
   return (
     <div
-      className={`relative text-white min-h-[650px] min-w-[1220px] cursor-pointer transition-transform duration-500 overflow-hidden ${
+      className={`relative text-white w-full h-full cursor-pointer transition-transform duration-500 overflow-hidden ${
         swipeUp ? "-translate-y-full" : "translate-y-0"
       }`}
       onClick={() => setSwipeUp(true)}
     >
       <div
-        className="absolute inset-0 -z-10 bg-cover bg-center bg-no-repeat opacity-25"
+        className="absolute inset-0 -z-10 bg-cover mt-8 bg-center bg-no-repeat opacity-25"
         style={{
           backgroundImage: `url(${bgImage})`,
         }}
       ></div>
 
-      <div className="absolute top-4 left-4 sm:top-6 sm:left-6">
+      <div className="absolute mt-8 sm:top-6 sm:left-6">
         <NetworkStatus />
       </div>
 
-      <div className="absolute top-4 right-4 sm:top-6 sm:right-6">
+      <div className="absolute mt-8 right-4 sm:top-6 sm:right-6">
         <img src={logo} alt="Logo" className="w-16 sm:w-24 h-auto opacity-90" />
       </div>
 
@@ -57,7 +57,7 @@ function ScreenSaver() {
         <TimeDisplay time={time} />
       </div>
       
-      <div className="absolute bottom-4 right-4 sm:bottom-6 sm:right-6">
+      <div className="absolute bottom-4 right-12 sm:bottom-6 sm:right-6">
         <SwipeHint />
       </div>
     </div>

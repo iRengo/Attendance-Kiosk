@@ -15,7 +15,9 @@
       {
         "title": "Facial Attendance Kiosk",
         "resizable": false,
-        "fullscreen": true,
+        "width": 1024,
+        "height": 600,
+        "fullscreen": false,
         "decorations": false,
         "transparent": false
       }

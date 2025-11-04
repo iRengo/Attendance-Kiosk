@@ -1,68 +1,32 @@
-import React, { useRef, useEffect, useState } from "react";
+import React, { useRef, useEffect } from "react";
+import axios from "axios";
 
-function CameraFeed({ deviceId = null, statusText = "Service Started", statusColor = "green-500" }) {
-  const videoRef = useRef(null);
-  const [streamError, setStreamError] = useState(false);
+function CameraFeed() {
+  const imgRef = useRef(null);
 
   useEffect(() => {
-    let stream;
+    let canceled = false;
 
-    async function startCamera() {
+    const fetchFrame = async () => {
       try {
-        if (deviceId) {
-          stream = await navigator.mediaDevices.getUserMedia({
-            video: { deviceId: { exact: deviceId } },
-            audio: false,
-          });
-        } else {
-          stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
-        }
-
-        if (videoRef.current) videoRef.current.srcObject = stream;
-        setStreamError(false);
+        const res = await axios.get("http://localhost:8000/camera-feed", { responseType: "blob" });
+        if (canceled) return;
+        const imgUrl = URL.createObjectURL(res.data);
+        if (imgRef.current) imgRef.current.src = imgUrl;
       } catch (err) {
-        console.error("Camera access failed:", err);
-
-        try {
-          const fallbackStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
-          if (videoRef.current) videoRef.current.srcObject = fallbackStream;
-          setStreamError(false);
-        } catch (fallbackErr) {
-          console.error("Fallback camera failed:", fallbackErr);
-          setStreamError(true);
-        }
+        console.error("Camera feed error:", err);
       }
-    }
-
-    startCamera();
-
-    return () => {
-      if (stream) stream.getTracks().forEach((track) => track.stop());
+      // Immediately request next frame for max FPS
+      if (!canceled) requestAnimationFrame(fetchFrame);
     };
-  }, [deviceId]);
+
+    fetchFrame(); // start the loop
+    return () => { canceled = true; };
+  }, []);
 
   return (
-    <div className="relative flex flex-col items-center justify-center border-2 border-gray-700 rounded-lg bg-black mb-4"
-         style={{ width: "1170px", height: "360px" }} 
-    >
-      {streamError && (
-        <p className="text-red-500 text-center absolute top-1/2 transform -translate-y-1/2">
-          Camera not accessible. Check permissions.
-        </p>
-      )}
-
-      <video
-        ref={videoRef}
-        autoPlay
-        muted
-        playsInline
-        className={`w-full h-full object-cover rounded-lg ${streamError ? "opacity-50" : ""}`}
-      />
-
-      <div className="absolute bottom-4 bg-gray-800 px-4 py-2 rounded-full flex items-center space-x-2">
-        <div className={`w-4 h-4 rounded-full bg-${statusColor} animate-pulse`}></div>
-        <span className="font-medium text-green-500">{statusText}</span>
-      </div>
+    <div className="relative w-full h-full bg-black rounded overflow-hidden">
+      <img ref={imgRef} className="w-full h-full object-cover" alt="Camera feed" />
     </div>
   );
 }

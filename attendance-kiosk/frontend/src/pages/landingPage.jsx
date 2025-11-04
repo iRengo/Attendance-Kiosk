@@ -13,7 +13,7 @@ function LandingPage() {
   const navigate = useNavigate();
 
   return (
-    <div className="relative min-h-[650px] min-w-[1220px] text-white flex flex-col items-center justify-center px-4">
+    <div className="relative w-full h-full flex flex-col items-center justify-center px-4 text-white">
       <div className="absolute bottom-4 left-4 sm:bottom-6 sm:left-6">
         <NetworkStatus />
       </div>
@@ -30,37 +30,53 @@ function LandingPage() {
         <TimeDateDisplay />
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-10 w-full max-w-3xl">
+      <div className="grid grid-cols-2 gap-4 w-full max-w-md sm:max-w-lg md:max-w-2xl">
         <div
-          className="flex flex-col items-center justify-center space-y-2 cursor-pointer hover:scale-105 transition-transform bg-gray-800 rounded-2xl p-8 shadow-lg"
+          className="flex flex-col items-center justify-center space-y-1 cursor-pointer hover:scale-105 transition-transform bg-gray-700/80 rounded-xl p-4 shadow-md"
           onClick={() => navigate("/systemService")}
         >
-          <img src={loginIcon} alt="Login" className="w-24 h-24 object-contain" />
-          <span className="text-2xl font-bold">Login</span>
+          <img
+            src={loginIcon}
+            alt="Login"
+            className="w-16 h-16 object-contain"
+          />
+          <span className="text-lg font-semibold">Login</span>
         </div>
 
         <div
-          className="flex flex-col items-center justify-center space-y-2 cursor-pointer hover:scale-105 transition-transform bg-gray-800 rounded-2xl p-8 shadow-lg"
+          className="flex flex-col items-center justify-center space-y-1 cursor-pointer hover:scale-105 transition-transform bg-gray-700/80 rounded-xl p-4 shadow-md"
           onClick={() => alert("Class history clicked")}
         >
-          <img src={classesIcon} alt="Classes" className="w-24 h-24 object-contain" />
-          <span className="text-2xl font-bold">Class History</span>
+          <img
+            src={classesIcon}
+            alt="Classes"
+            className="w-16 h-16 object-contain"
+          />
+          <span className="text-lg font-semibold">Class History</span>
         </div>
 
         <div
-          className="flex flex-col items-center justify-center space-y-2 cursor-pointer hover:scale-105 transition-transform bg-gray-800 rounded-2xl p-8 shadow-lg"
+          className="flex flex-col items-center justify-center space-y-1 cursor-pointer hover:scale-105 transition-transform bg-gray-700/80 rounded-xl p-4 shadow-md"
           onClick={() => alert("Notifications clicked")}
         >
-          <img src={notifIcon} alt="Notifications" className="w-24 h-24 object-contain" />
-          <span className="text-2xl font-bold">Notifications</span>
+          <img
+            src={notifIcon}
+            alt="Notifications"
+            className="w-16 h-16 object-contain"
+          />
+          <span className="text-lg font-semibold">Notifications</span>
         </div>
 
         <div
-          className="flex flex-col items-center justify-center space-y-2 cursor-pointer hover:scale-105 transition-transform bg-gray-800 rounded-2xl p-8 shadow-lg"
+          className="flex flex-col items-center justify-center space-y-1 cursor-pointer hover:scale-105 transition-transform bg-gray-700/80 rounded-xl p-4 shadow-md"
           onClick={() => navigate("/settings")}
         >
-          <img src={settingsIcon} alt="Settings" className="w-24 h-24 object-contain" />
-          <span className="text-2xl font-bold">Settings</span>
+          <img
+            src={settingsIcon}
+            alt="Settings"
+            className="w-16 h-16 object-contain"
+          />
+          <span className="text-lg font-semibold">Settings</span>
         </div>
       </div>
     </div>

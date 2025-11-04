@@ -33,8 +33,8 @@ function SettingsPage() {
     };
 
     return (
-        <div className="relative flex justify-center items-center w-[1220px] h-[600px] text-white">
-            <div className="bg-gray-900 rounded-2xl shadow-lg flex overflow-hidden w-[1220px] h-[600px]">
+        <div className="relative flex justify-center items-center w-full h-full text-white">
+            <div className="bg-gray-700/80 mt-8 rounded-2xl shadow-lg flex overflow-hidden w-[1220px] h-[600px]">
                 <div className="bg-gray-800 w-1/4 p-6 flex flex-col justify-start border-r border-gray-700">
                     <button
                         onClick={() => navigate(-1)}
