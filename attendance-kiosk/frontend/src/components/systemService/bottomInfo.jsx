@@ -1,16 +1,14 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import leaveIcon from "../../assets/icons/leave.png";
 import axios from "axios";
 
 // Base URL for backend API. Allow overriding with Vite env var VITE_API_BASE
 const API_BASE = import.meta.env.VITE_API_BASE || "http://localhost:8000";
 
 function BottomInfo({ studentCount = 60 }) {
-  const [studentName, setStudentName] = useState("No face detected");
-  const [studentStatus, setStudentStatus] = useState("Waiting...");
+  const [studentName, setStudentName] = useState("Not Available");
+  const [studentStatus, setStudentStatus] = useState("Service inactive");
+  const [sessionInfo, setSessionInfo] = useState(null);
   const [time, setTime] = useState(new Date());
-  const navigate = useNavigate();
 
   useEffect(() => {
     const timer = setInterval(() => setTime(new Date()), 1000);
@@ -18,14 +16,23 @@ function BottomInfo({ studentCount = 60 }) {
   }, []);
 
   useEffect(() => {
-    const interval = setInterval(async () => {
+    // Poll only when a session is active (sessionInfo.class_id present). Otherwise show Not Available.
+    let mounted = true;
+    const poll = async () => {
+      if (!mounted) return;
+      if (!(sessionInfo && sessionInfo.class_id)) {
+        // no active session: show Not Available
+        setStudentName("Not Available");
+        setStudentStatus("Service inactive");
+        return;
+      }
+
       try {
         const res = await axios.get(`${API_BASE}/recognize-camera`);
         const data = res.data || {};
         switch (data.status) {
           case "success":
             setStudentName(data.name || "Unknown");
-            // if sync returned registration info, use it to show denied/registered
             if (data.registered === false) {
               setStudentStatus("Denied - Not registered");
             } else {
@@ -54,13 +61,44 @@ function BottomInfo({ studentCount = 60 }) {
       } catch (err) {
         console.error(err);
       }
-    }, 100); // 10 FPS recognition polling
+    };
 
-    return () => clearInterval(interval);
+    // use a repeating interval while mounted; interval function checks session state each tick
+    const id = setInterval(poll, 100); // ~10 FPS when active
+    // run immediately once
+    poll();
+
+    return () => {
+      mounted = false;
+      clearInterval(id);
+    };
+  }, [sessionInfo]);
+
+  // Poll for recognized teacher (low rate)
+  // Note: start/stop flow moved into CameraFeed overlay. BottomInfo no longer polls for teacher detection.
+
+  // Poll current session (to reflect started state)
+  useEffect(() => {
+    let mounted = true;
+    const fetchSession = async () => {
+      try {
+        const res = await axios.get(`${API_BASE}/session`);
+        if (!mounted) return;
+        setSessionInfo(res.data && res.data.session ? res.data.session : null);
+      } catch (e) {
+        // ignore
+      }
+    };
+    fetchSession();
+    const id = setInterval(fetchSession, 3000);
+    return () => {
+      mounted = false;
+      clearInterval(id);
+    };
   }, []);
 
   return (
-    <div className="flex justify-between items-center w-full">
+    <div className="relative flex justify-between items-center w-full">
       <div className="flex items-center space-x-4">
         <div className="w-12 h-12 bg-gray-700 rounded-full flex items-center justify-center">
           <span className="text-gray-400 text-xs">ICON</span>
@@ -71,10 +109,10 @@ function BottomInfo({ studentCount = 60 }) {
         </div>
       </div>
       <div className="flex justify-center ml-25">
-        <button onClick={() => navigate("/landing")} className="focus:outline-none">
-          <img src={leaveIcon} alt="Return" className="w-12 h-12 object-contain hover:opacity-80 transition-opacity" />
-        </button>
+        {/* Start/Stop controls moved to camera overlay. */}
       </div>
+
+      {/* Start/stop modal and controls moved into CameraFeed overlay; removed from BottomInfo */}
       <div className="text-right">
         <p className="font-bold">Student Present: {studentCount}</p>
         <p className="text-gray-400">

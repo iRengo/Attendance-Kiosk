@@ -1,43 +1,38 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
 // Base URL for backend API. Allow overriding with Vite env var VITE_API_BASE
 const API_BASE = import.meta.env.VITE_API_BASE || "http://localhost:8000";
 
-function TopInfo({ teacherName: propTeacherName = "Professor X", title = "Teacher", classNameText: propClassName = "Service not started" }) {
-  const [recognizedTeacher, setRecognizedTeacher] = useState(null);
+function TopInfo({ teacherName: propTeacherName = "", title = "Teacher", classNameText: propClassName = "" }) {
+  const [sessionInfo, setSessionInfo] = useState(null);
 
-  // Poll /recognize-teacher to show a detected teacher when available
+  // Poll current session to display active class when started
   useEffect(() => {
     let mounted = true;
-    let id = null;
-    const fetchRecognized = async () => {
+    const fetchSession = async () => {
       try {
-        const res = await fetch(`${API_BASE}/recognize-teacher`);
+        const res = await fetch(`${API_BASE}/session`);
         if (!res.ok) return;
         const json = await res.json();
         if (!mounted) return;
-        setRecognizedTeacher(json);
+        setSessionInfo(json.session || null);
       } catch (e) {
-        // ignore network errors
+        // ignore
       }
     };
-
-    fetchRecognized();
-    id = setInterval(fetchRecognized, 1500);
-
-    return () => {
-      mounted = false;
-      if (id) clearInterval(id);
-    };
+    fetchSession();
+    const id = setInterval(fetchSession, 3000);
+    return () => { mounted = false; clearInterval(id); };
   }, []);
 
-  const teacherName = (recognizedTeacher && recognizedTeacher.status === "success")
-    ? (recognizedTeacher.name || propTeacherName)
-    : propTeacherName;
-  const classNameText = (recognizedTeacher && Array.isArray(recognizedTeacher.classes) && recognizedTeacher.classes.length > 0)
-    ? (recognizedTeacher.classes[0].name || propClassName)
-    : propClassName;
-  const titleText = (recognizedTeacher && recognizedTeacher.status === "success") ? "Teacher detected" : "Service inactive";
+  // Only show teacher name and subject when a session is active and class is chosen
+  const isActive = sessionInfo && sessionInfo.class_id;
+  const teacherName = isActive ? (sessionInfo.teacher_name || propTeacherName) : "";
+  const classNameText = isActive ? (sessionInfo.class_name || propClassName) : "";
+  const titleText = isActive ? "Active" : "Service inactive";
+
+  const navigate = useNavigate();
 
   return (
     <div className="flex justify-between items-start mb-4">
@@ -46,13 +41,14 @@ function TopInfo({ teacherName: propTeacherName = "Professor X", title = "Teache
           <span className="text-gray-400 text-sm">ICON</span>
         </div>
         <div>
-          <p className="font-bold text-xl">{teacherName}</p>
-          <p className="text-left text-gray-400">{titleText}</p>
+          <p className="font-bold text-xl">{isActive ? teacherName : ""}</p>
+          <p className={`mt-1 text-left ${isActive ? 'text-green-300' : 'text-gray-400'}`}>{titleText}</p>
         </div>
       </div>
 
       <div className="text-right">
-        <p className="font-bold text-xl">{classNameText}</p>
+        <p className="font-bold text-xl">{isActive ? classNameText : ""}</p>
+        <p className="text-sm text-gray-300 mt-1 cursor-pointer hover:text-gray-100" onClick={() => navigate('/landing')}>Return</p>
       </div>
     </div>
   );
