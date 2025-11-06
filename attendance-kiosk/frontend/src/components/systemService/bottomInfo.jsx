@@ -4,10 +4,11 @@ import axios from "axios";
 // Base URL for backend API. Allow overriding with Vite env var VITE_API_BASE
 const API_BASE = import.meta.env.VITE_API_BASE || "http://localhost:8000";
 
-function BottomInfo({ studentCount = 60 }) {
+function BottomInfo({ studentCount = "Not Available" }) {
   const [studentName, setStudentName] = useState("Not Available");
   const [studentStatus, setStudentStatus] = useState("Service inactive");
   const [sessionInfo, setSessionInfo] = useState(null);
+  const [presentCount, setPresentCount] = useState(0);
   const [time, setTime] = useState(new Date());
 
   useEffect(() => {
@@ -37,6 +38,15 @@ function BottomInfo({ studentCount = 60 }) {
               setStudentStatus("Denied - Not registered");
             } else {
               setStudentStatus("Present");
+              // mark student present on server (idempotent on backend)
+              try {
+                const m = await axios.post(`${API_BASE}/session/mark`, { student_id: data.id, student_name: data.name });
+                if (m.data && Array.isArray(m.data.studentsPresent)) {
+                  setPresentCount(m.data.studentsPresent.length);
+                }
+              } catch (e) {
+                // ignore mark errors
+              }
             }
             break;
           case "no_face":
@@ -85,6 +95,19 @@ function BottomInfo({ studentCount = 60 }) {
         const res = await axios.get(`${API_BASE}/session`);
         if (!mounted) return;
         setSessionInfo(res.data && res.data.session ? res.data.session : null);
+        // if session active, fetch attendance counts
+        try {
+          if (res.data && res.data.session && res.data.session.class_id) {
+            const att = await axios.get(`${API_BASE}/session/attendance`);
+            const data = att.data || {};
+            const present = Array.isArray(data.studentsPresent) ? data.studentsPresent.length : 0;
+            setPresentCount(present);
+          } else {
+            setPresentCount(0);
+          }
+        } catch (e) {
+          // ignore attendance fetch errors
+        }
       } catch (e) {
         // ignore
       }
@@ -99,7 +122,7 @@ function BottomInfo({ studentCount = 60 }) {
 
   return (
     <div className="relative flex justify-between items-center w-full">
-      <div className="flex items-center space-x-4">
+      <div className="flex items-center space-x-4 mt-4">
         <div className="w-12 h-12 bg-gray-700 rounded-full flex items-center justify-center">
           <span className="text-gray-400 text-xs">ICON</span>
         </div>
@@ -114,7 +137,7 @@ function BottomInfo({ studentCount = 60 }) {
 
       {/* Start/stop modal and controls moved into CameraFeed overlay; removed from BottomInfo */}
       <div className="text-right">
-        <p className="font-bold">Student Present: {studentCount}</p>
+        <p className="font-bold">Student Present: {sessionInfo && sessionInfo.class_id ? presentCount : studentCount}</p>
         <p className="text-gray-400">
           {time.toLocaleDateString([], { weekday: "long", month: "long", day: "numeric", year: "numeric" })}{" "}
           {time.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", second: "2-digit" })}

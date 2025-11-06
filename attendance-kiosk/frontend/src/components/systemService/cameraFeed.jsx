@@ -167,8 +167,8 @@ function CameraFeed() {
   }, [toast]);
 
   return (
-    <div className="relative w-full h-full bg-black rounded overflow-hidden">
-      <img ref={imgRef} className="w-full h-full object-cover" alt="Camera feed" />
+    <div className="relative w-full bg-black rounded overflow-hidden" style={{ height: 'min(80vh, calc(100vh - 120px))' }}>
+      <img ref={imgRef} className="w-full h-full object-cover" alt="Camera feed" style={{ height: '100%' }} />
 
   {/* Toast notification (simple local implementation) */}
   {toast ? (
