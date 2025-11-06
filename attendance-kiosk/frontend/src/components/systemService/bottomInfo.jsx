@@ -3,6 +3,9 @@ import { useNavigate } from "react-router-dom";
 import leaveIcon from "../../assets/icons/leave.png";
 import axios from "axios";
 
+// Base URL for backend API. Allow overriding with Vite env var VITE_API_BASE
+const API_BASE = import.meta.env.VITE_API_BASE || "http://localhost:8000";
+
 function BottomInfo({ studentCount = 60 }) {
   const [studentName, setStudentName] = useState("No face detected");
   const [studentStatus, setStudentStatus] = useState("Waiting...");
@@ -17,13 +20,36 @@ function BottomInfo({ studentCount = 60 }) {
   useEffect(() => {
     const interval = setInterval(async () => {
       try {
-        const res = await axios.get("http://localhost:8000/recognize-camera");
-        if (res.data.status === "success") {
-          setStudentName(res.data.name);
-          setStudentStatus("Present");
-        } else {
-          setStudentName("No face detected");
-          setStudentStatus("Waiting...");
+        const res = await axios.get(`${API_BASE}/recognize-camera`);
+        const data = res.data || {};
+        switch (data.status) {
+          case "success":
+            setStudentName(data.name || "Unknown");
+            // if sync returned registration info, use it to show denied/registered
+            if (data.registered === false) {
+              setStudentStatus("Denied - Not registered");
+            } else {
+              setStudentStatus("Present");
+            }
+            break;
+          case "no_face":
+            setStudentName("No face detected");
+            setStudentStatus("Waiting...");
+            break;
+          case "denied":
+            if (data.reason === "not_registered") {
+              setStudentName(data.name || "Unknown");
+              setStudentStatus("Denied - Not registered");
+            } else {
+              setStudentName(data.name || "Denied");
+              setStudentStatus("Denied");
+            }
+            break;
+          case "unknown":
+          default:
+            setStudentName("Unknown");
+            setStudentStatus("Unknown");
+            break;
         }
       } catch (err) {
         console.error(err);

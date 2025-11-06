@@ -3,10 +3,10 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
-"scripts": {
+  "scripts": {
   "dev": "vite",
   "build": "vite build",
-  "backend": "cd ../backend/python_service && ../../../.venv/bin/python3 -m uvicorn main:app --reload --host 0.0.0.0 --port 8000",
+  "backend": "cd ../backend/python_service && /home/raspberrypi/Desktop/Capstone_Latest/.venv/bin/python3 -m uvicorn main:app --reload --host 0.0.0.0 --port 8000",
   "tauri-dev": "tauri dev",
   "start-all": "concurrently \"npm run backend\" \"npm run tauri-dev\"",
   "preview": "vite preview"

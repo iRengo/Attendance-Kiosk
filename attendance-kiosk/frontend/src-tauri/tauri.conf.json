@@ -17,7 +17,7 @@
         "resizable": false,
         "width": 1024,
         "height": 600,
-        "fullscreen": false,
+        "fullscreen": true,
         "decorations": false,
         "transparent": false
       }
